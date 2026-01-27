@@ -7,6 +7,8 @@ WORKDIR /app
 # Copiar arquivos de dependências
 COPY package*.json ./
 
+
+
 # Instalar dependências
 RUN npm cache clean --force 
 RUN npm install --legacy-peer-deps --loglevel=error
