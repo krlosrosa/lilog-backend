@@ -1,5 +1,5 @@
-import { RoleDto } from '../model/roles.schema';
-import { UserDto } from '../model/user.schema';
+import { RoleDto } from '../model/roles.schema.js';
+import { UserDto } from '../model/user.schema.js';
 
 export interface IIdentityUserRepository {
   addUser(command: UserDto): Promise<string | null>;

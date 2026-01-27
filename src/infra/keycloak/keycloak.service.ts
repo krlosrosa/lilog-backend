@@ -6,9 +6,9 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { IIdentityUserRepository } from 'src/domain/users/repositories/IIdentityUser.repository';
-import { UserDto } from 'src/domain/users/model/user.schema';
-import { RoleDto } from 'src/domain/users/model/roles.schema';
+import { IIdentityUserRepository } from 'src/domain/users/repositories/IIdentityUser.repository.js';
+import { UserDto } from 'src/domain/users/model/user.schema.js';
+import { RoleDto } from 'src/domain/users/model/roles.schema.js';
 
 @Injectable()
 export class KeycloakService implements IIdentityUserRepository {
@@ -149,7 +149,7 @@ export class KeycloakService implements IIdentityUserRepository {
   async getAllRoles(): Promise<RoleDto[]> {
     const kcAdminClient: KeycloakAdminClient = await this.getClient();
     const roles = await kcAdminClient.clients.listRoles({
-      id: process.env.KEYCLOAK_ID_CLIENT,
+      id: process.env.KEYCLOAK_ID_CLIENT as string,
       realm: 'lilo',
     });
     return roles as RoleDto[];
