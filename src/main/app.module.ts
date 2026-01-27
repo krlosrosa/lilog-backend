@@ -4,6 +4,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { DevolucaoModule } from '../infra/modules/devolucao.module.js';
 import { JwtModule } from '@nestjs/jwt';
+import { UserModule } from '../infra/modules/user.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
       publicKey: `-----BEGIN PUBLIC KEY-----\n${process.env.PUBLIC_KEY}\n-----END PUBLIC KEY-----`, //join(process.cwd(), 'src/auth/keys/public.pem'),
     }),
     DevolucaoModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

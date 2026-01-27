@@ -15,6 +15,16 @@ import { ListDemandasByCenter } from '../../application/devolucao/usecases/list-
 import { ListDemandasByCenterAndDataController } from '../../presentation/controllers/devolucao/list-demanda-by-center-and-data.js';
 import { GetDemandaByIdController } from '../../presentation/controllers/devolucao/get-demanda-by-id.js';
 import { GetDemandaById } from '../../application/devolucao/usecases/get-demanda-by-id.js';
+import { AddNfInDemandaController } from '../../presentation/controllers/devolucao/add-nf-in-demanda.js';
+import AddNfInDemand from '../../application/devolucao/usecases/add-nf-in-demand.js';
+import { LiberateDemandDevolucaoController } from '../../presentation/controllers/devolucao/liberate-demand-devolucao.js';
+import { LiberateDemandDevolucao } from '../../application/devolucao/usecases/liberate.demand-devolucao.js';
+import { ListDemandOpenController } from '../../presentation/controllers/devolucao/list-demand-open.js';
+import { ListDemandOpen } from '../../application/devolucao/usecases/list-demand-open.js';
+import { StartDemandaDevolucaoController } from '../../presentation/controllers/devolucao/start-demanda-devolucao.js';
+import { StartDemandaDevolucao } from '../../application/devolucao/usecases/start-demanda-devolucao.js';
+import { GetItensContabilController } from '../../presentation/controllers/devolucao/get-itens-contabil.js';
+import { GetItensContabil } from '../../application/devolucao/usecases/get-itens-contabil.js';
 
 @Module({
   imports: [
@@ -27,6 +37,11 @@ import { GetDemandaById } from '../../application/devolucao/usecases/get-demanda
     AddNewDemandController, // Vem da pasta Presentation
     ListDemandasByCenterAndDataController, // Vem da pasta Presentation
     GetDemandaByIdController,
+    AddNfInDemandaController,
+    LiberateDemandDevolucaoController,
+    ListDemandOpenController,
+    StartDemandaDevolucaoController,
+    GetItensContabilController,
   ],
   providers: [
     drizzleProvider, // Provider do Drizzle ORM
@@ -36,6 +51,11 @@ import { GetDemandaById } from '../../application/devolucao/usecases/get-demanda
     RavexAuthService, // Serviço de autenticação Ravex
     ListDemandasByCenter,
     GetDemandaById,
+    AddNfInDemand,
+    LiberateDemandDevolucao,
+    ListDemandOpen,
+    StartDemandaDevolucao,
+    GetItensContabil,
     {
       provide: 'IDevolucaoRepository', // Interface no Domain
       useClass: DevolucaoDrizzleRepository, // Implementação na Infra
@@ -49,6 +69,5 @@ import { GetDemandaById } from '../../application/devolucao/usecases/get-demanda
       useClass: RavexRepository,
     },
   ],
-  exports: [GetResultadoDemanda], // Caso outro módulo precise deste caso de uso
 })
 export class DevolucaoModule {}
