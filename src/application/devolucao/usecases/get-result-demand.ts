@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { DemandaMapper } from 'src/domain/devolucao/mappers/demanda.mapper.js';
-import { ResultadoDemandaDto } from 'src/domain/devolucao/model/resultado.schema.js';
-import { type IDevolucaoRepository } from 'src/domain/devolucao/repositories/devoluca.repository.js';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { DemandaMapper } from '../../../domain/devolucao/mappers/demanda.mapper.js';
+import { ResultadoDemandaDto } from '../../../domain/devolucao/model/resultado.schema.js';
+import { type IDevolucaoRepository } from '../../../domain/devolucao/repositories/devoluca.repository.js';
 
 /**
  * Caso de uso responsável por obter o resultado completo de uma demanda pelo ID.
@@ -24,7 +24,10 @@ export class GetResultadoDemanda {
    * @param {IDevolucaoRepository} devolucaoRepository - Repositório responsável pelo acesso
    * aos dados de devoluções, demandas, notas e itens
    */
-  constructor(private readonly devolucaoRepository: IDevolucaoRepository) {}
+  constructor(
+    @Inject('IDevolucaoRepository')
+    private readonly devolucaoRepository: IDevolucaoRepository,
+  ) {}
 
   /**
    * Executa o caso de uso para obter o resultado completo de uma demanda.

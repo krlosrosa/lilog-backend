@@ -6,9 +6,9 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { IIdentityUserRepository } from 'src/domain/users/repositories/IIdentityUser.repository.js';
-import { UserDto } from 'src/domain/users/model/user.schema.js';
-import { RoleDto } from 'src/domain/users/model/roles.schema.js';
+import { IIdentityUserRepository } from '../../domain/users/repositories/IIdentityUser.repository.js';
+import { UserDto } from '../../domain/users/model/user.schema.js';
+import { RoleDto } from '../../domain/users/model/roles.schema.js';
 
 @Injectable()
 export class KeycloakService implements IIdentityUserRepository {

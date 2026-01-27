@@ -30,7 +30,7 @@ import {
   liteValidacao,
   liteAnomalia,
   userCenter,
-} from './schema';
+} from './schema.js';
 
 export const demandaRelations = relations(demanda, ({ one, many }) => ({
   user_cadastradoPorId: one(user, {

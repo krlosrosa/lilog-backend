@@ -1,9 +1,9 @@
-import { ResponseRavexDto } from 'src/domain/ravex/model/response.schema.js';
+import { ResponseRavexDto } from '../../services/ravex/model/response.schema.js';
 import { RavexAuthService } from '../../services/ravex/RavexAuthService.js';
-import { IRavexRepository } from 'src/domain/ravex/ravex.repository.js';
-import { NotFoundException } from '@nestjs/common';
+import { type IRavexRepository } from '../../services/ravex/ravex.repository.js';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { ViagemMapper } from '../../services/ravex/mappers/viagem.mapper.js';
-import { ProdutoRepository } from 'src/domain/produto/repositories/IProduto.repository.js';
+import { type ProdutoRepository } from '../../../domain/produto/repositories/IProduto.repository.js';
 
 /**
  * Caso de uso responsável por obter informações completas de uma viagem pelo ID.
@@ -18,6 +18,7 @@ import { ProdutoRepository } from 'src/domain/produto/repositories/IProduto.repo
  *
  * @class GetInfoByViagemId
  */
+@Injectable()
 export class GetInfoByViagemId {
   /**
    * Cria uma instância do caso de uso GetInfoByViagemId.
@@ -28,7 +29,9 @@ export class GetInfoByViagemId {
    */
   constructor(
     private readonly authService: RavexAuthService,
+    @Inject('IRavexRepository')
     private readonly ravexRepository: IRavexRepository,
+    @Inject('IProdutoRepository')
     private readonly produtoRepository: ProdutoRepository,
   ) {}
 

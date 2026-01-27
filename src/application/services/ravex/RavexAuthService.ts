@@ -1,7 +1,12 @@
-import { IRavexRepository } from 'src/domain/ravex/ravex.repository.js';
+import { Injectable, Inject } from '@nestjs/common';
+import { type IRavexRepository } from './ravex.repository.js';
 
+@Injectable()
 export class RavexAuthService {
-  constructor(private readonly ravexRepository: IRavexRepository) {}
+  constructor(
+    @Inject('IRavexRepository')
+    private readonly ravexRepository: IRavexRepository,
+  ) {}
 
   async getToken(): Promise<string> {
     const auth = await this.ravexRepository.authRavex();

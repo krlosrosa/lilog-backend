@@ -1,7 +1,7 @@
-import { definirTipoDevolucao } from 'src/domain/devolucao/enums/tipo.enum.js';
-import { ProdutoDto } from 'src/domain/produto/model/produto.schema.js';
-import { AnomaliasViagemResponseDto } from 'src/domain/ravex/model/anomalias-viagem.schema.js';
-import { RavexResponseViagemDto } from 'src/domain/ravex/model/viagem.schema.js';
+import { definirTipoDevolucao } from '../../../../domain/devolucao/enums/tipo.enum.js';
+import { ProdutoDto } from '../../../../domain/produto/model/produto.schema.js';
+import { AnomaliasViagemResponseDto } from '../model/anomalias-viagem.schema.js';
+import { RavexResponseViagemDto } from '../model/viagem.schema.js';
 
 export class ViagemMapper {
   // Transforma a lista em um dicionário para busca O(1)

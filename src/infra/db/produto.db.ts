@@ -4,10 +4,10 @@ import { produto } from './drizzle/config/migrations/schema.js';
 import {
   ProdutoDto,
   ProdutoSchema,
-} from 'src/domain/produto/model/produto.schema.js';
+} from '../../domain/produto/model/produto.schema.js';
 import { DRIZZLE_PROVIDER } from './drizzle/config/drizzle.constat.js';
 import { type DrizzleClient } from './drizzle/config/drizzle.provider.js';
-import { ProdutoRepository } from 'src/domain/produto/repositories/IProduto.repository.js';
+import { ProdutoRepository } from '../../domain/produto/repositories/IProduto.repository.js';
 
 @Injectable()
 export class ProdutoDrizzleRepository implements ProdutoRepository {
