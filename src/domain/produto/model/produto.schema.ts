@@ -6,7 +6,7 @@ import { createZodDto } from 'nestjs-zod';
 
 export const ProdutoSchema = z.object({
   codDum: z.string().optional(),
-  codEan: z.string().min(1, 'Código EAN é obrigatório'),
+  codEan: z.string().optional(),
   sku: z.string().min(1, 'SKU é obrigatório'),
   descricao: z.string().min(1, 'Descrição é obrigatória'),
   shelf: z.number().int().positive('Shelf deve ser um número positivo'),

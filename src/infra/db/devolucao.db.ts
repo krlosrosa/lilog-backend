@@ -19,19 +19,15 @@ import {
   ItensContabilDto,
 } from '../../domain/devolucao/model/get-itens-contabil.schema.js';
 import { AddCheckListDto } from '../../domain/devolucao/model/add-check-list.schema.js';
-import { MinioService } from '../minio/minio.service.js';
-import { AddCheckListResponseDto } from '../../domain/devolucao/model/result-add-check-list.js';
 import { StatusDevolucao } from '../../domain/devolucao/enums/status.enum.js';
 import { AddConferenciaCegaDto } from '../../domain/devolucao/model/add-contagem.schema.js';
-import { AddAnomaliaDto } from 'src/domain/devolucao/model/add-anomalia.schema.js';
+import { AddAnomaliaDto } from '../../domain/devolucao/model/add-anomalia.schema.js';
 
 @Injectable()
 export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
   constructor(
     @Inject(DRIZZLE_PROVIDER)
     private readonly db: DrizzleClient,
-    @Inject(MinioService)
-    private readonly minioService: MinioService,
   ) {}
 
   async findById(id: number): Promise<any> {
@@ -209,24 +205,8 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
   async addCheckList(
     checkList: AddCheckListDto,
     demandaId: string,
-  ): Promise<AddCheckListResponseDto> {
-    // 1. Defina nomes de arquivos únicos (usar timestamp evita cache e sobreposição)
-    const timestamp = Date.now();
-    const keyBauAberto = `devolucaochecklist/${checkList.demandaId}/${timestamp}-bau-aberto.jpg`;
-    const keyBauFechado = `devolucaochecklist/${checkList.demandaId}/${timestamp}-bau-fechado.jpg`;
-
+  ): Promise<void> {
     return await this.db.transaction(async (tx) => {
-      // 2. Gera as URLs pré-assinadas
-      const urlBauAberto = await this.minioService.getPresignedUploadUrl(
-        'devolucao',
-        keyBauAberto,
-      );
-      const urlBauFechado = await this.minioService.getPresignedUploadUrl(
-        'devolucao',
-        keyBauFechado,
-      );
-      // 3. Salva no banco (guardamos o caminho/key do arquivo, não a URL assinada)
-      // A URL assinada expira, o caminho no bucket é permanente.
       await tx.insert(devolucaoCheckList).values({
         temperaturaBau: Number(checkList?.temperaturaBau || 0),
         temperaturaProduto: Number(checkList?.temperaturaProduto || 0),
@@ -235,13 +215,21 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
         demandaId: Number(demandaId),
       });
 
-      // 4. Retorna um objeto nomeado para o Frontend não se perder
-      return {
-        uploadUrls: {
-          bauAberto: urlBauAberto,
-          bauFechado: urlBauFechado,
+      const checkListImages = [
+        {
+          demandaId: Number(demandaId),
+          processo: 'devolucao-check-list',
+          tag: checkList?.fotoBauAberto,
         },
-      };
+        {
+          demandaId: Number(demandaId),
+          processo: 'devolucao-check-list',
+          tag: checkList?.fotoBauFechado,
+        },
+      ];
+
+      await tx.insert(devolucaImagens).values(checkListImages);
+      // 4. Retorna um objeto nomeado para o Frontend não se perde
     });
   }
 

@@ -28,10 +28,7 @@ export interface IDevolucaoRepository {
     accountId: string,
   ): Promise<void>;
   getItensContabil(demandaId: string): Promise<ItensContabilDto[]>;
-  addCheckList(
-    checkList: AddCheckListDto,
-    demandaId: string,
-  ): Promise<AddCheckListResponseDto>;
+  addCheckList(checkList: AddCheckListDto, demandaId: string): Promise<void>;
   addContagemCega(
     demandaId: string,
     contagem: AddConferenciaCegaDto[],

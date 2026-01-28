@@ -31,6 +31,10 @@ import { AddContagemCegaController } from '../../presentation/controllers/devolu
 import { AddContagemCegaUseCase } from '../../application/devolucao/usecases/add-contagem-cega.js';
 import { FinishDemandaController } from '../../presentation/controllers/devolucao/finish-demanda.js';
 import { FinishDemanda } from '../../application/devolucao/usecases/finish-demanda.js';
+import { AddAnomaliaDevolucaoController } from '../../presentation/controllers/devolucao/add-anomalia-devolucao.js';
+import { AddAnomaliaDevolucao } from '../../application/devolucao/usecases/add-anomalia-devolucao.js';
+import { PresignedUrlDevolucaoController } from '../../presentation/controllers/devolucao/presigned-url-devolucao.js';
+import { PresignedUrlMinio } from '../../application/devolucao/usecases/presigned-url-minio.js';
 
 @Module({
   imports: [
@@ -51,6 +55,8 @@ import { FinishDemanda } from '../../application/devolucao/usecases/finish-deman
     AddCheckListDemandController,
     AddContagemCegaController,
     FinishDemandaController,
+    AddAnomaliaDevolucaoController,
+    PresignedUrlDevolucaoController,
   ],
   providers: [
     drizzleProvider, // Provider do Drizzle ORM
@@ -68,6 +74,8 @@ import { FinishDemanda } from '../../application/devolucao/usecases/finish-deman
     AddCheckListDemand,
     AddContagemCegaUseCase,
     FinishDemanda,
+    AddAnomaliaDevolucao,
+    PresignedUrlMinio,
     {
       provide: 'IDevolucaoRepository', // Interface no Domain
       useClass: DevolucaoDrizzleRepository, // Implementação na Infra

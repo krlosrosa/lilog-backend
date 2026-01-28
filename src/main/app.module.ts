@@ -6,6 +6,7 @@ import { DevolucaoModule } from '../infra/modules/devolucao.module.js';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../infra/modules/user.module.js';
 import { MinioModule } from '../infra/minio/minio.module.js';
+import { ProdutoModule } from '../infra/modules/produto.module.js';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MinioModule } from '../infra/minio/minio.module.js';
     DevolucaoModule,
     UserModule,
     MinioModule,
+    ProdutoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
