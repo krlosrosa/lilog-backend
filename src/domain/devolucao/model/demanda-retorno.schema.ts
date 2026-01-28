@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { StatusDevolucao } from '../enums/status.enum.js';
 
 export const DemandSchema = z.object({
   placa: z.string().min(1, 'Placa do veículo é obrigatória'),
@@ -20,5 +21,8 @@ export const DemandSchema = z.object({
   conferenteId: z.string().optional().nullable(),
   senha: z.string().min(1, 'Senha é obrigatória'),
   viagemId: z.string().optional().nullable(),
+  status: z.enum(StatusDevolucao),
+  criadoEm: z.string(),
+  id: z.number(),
 });
 export class DemandDto extends createZodDto(DemandSchema) {}

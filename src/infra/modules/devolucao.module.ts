@@ -25,6 +25,12 @@ import { StartDemandaDevolucaoController } from '../../presentation/controllers/
 import { StartDemandaDevolucao } from '../../application/devolucao/usecases/start-demanda-devolucao.js';
 import { GetItensContabilController } from '../../presentation/controllers/devolucao/get-itens-contabil.js';
 import { GetItensContabil } from '../../application/devolucao/usecases/get-itens-contabil.js';
+import { AddCheckListDemand } from '../../application/devolucao/usecases/add-check-list.js';
+import { AddCheckListDemandController } from '../../presentation/controllers/devolucao/add-check-list.demand.js';
+import { AddContagemCegaController } from '../../presentation/controllers/devolucao/add-contagem-cega.js';
+import { AddContagemCegaUseCase } from '../../application/devolucao/usecases/add-contagem-cega.js';
+import { FinishDemandaController } from '../../presentation/controllers/devolucao/finish-demanda.js';
+import { FinishDemanda } from '../../application/devolucao/usecases/finish-demanda.js';
 
 @Module({
   imports: [
@@ -42,6 +48,9 @@ import { GetItensContabil } from '../../application/devolucao/usecases/get-itens
     ListDemandOpenController,
     StartDemandaDevolucaoController,
     GetItensContabilController,
+    AddCheckListDemandController,
+    AddContagemCegaController,
+    FinishDemandaController,
   ],
   providers: [
     drizzleProvider, // Provider do Drizzle ORM
@@ -56,6 +65,9 @@ import { GetItensContabil } from '../../application/devolucao/usecases/get-itens
     ListDemandOpen,
     StartDemandaDevolucao,
     GetItensContabil,
+    AddCheckListDemand,
+    AddContagemCegaUseCase,
+    FinishDemanda,
     {
       provide: 'IDevolucaoRepository', // Interface no Domain
       useClass: DevolucaoDrizzleRepository, // Implementação na Infra

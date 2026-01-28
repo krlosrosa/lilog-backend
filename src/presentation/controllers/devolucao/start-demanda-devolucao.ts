@@ -10,7 +10,7 @@ export class StartDemandaDevolucaoController {
   constructor(
     private readonly startDemandaDevolucaoUseCase: StartDemandaDevolucao,
   ) {}
-  @Post('start-demanda/:demandaId')
+  @Post('start-demanda/:demandaId/:doca')
   @ApiOperation({
     summary: 'Iniciar conferência',
     operationId: 'startDemandaDevolucaoMobile',
@@ -22,8 +22,13 @@ export class StartDemandaDevolucaoController {
   })
   async startDemanda(
     @Param('demandaId') demandaId: string,
+    @Param('doca') doca: string,
     @AccountId() accountId: string,
   ): Promise<void> {
-    return this.startDemandaDevolucaoUseCase.execute(demandaId, accountId);
+    return this.startDemandaDevolucaoUseCase.execute(
+      demandaId,
+      doca,
+      accountId,
+    );
   }
 }

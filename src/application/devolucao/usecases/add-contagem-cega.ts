@@ -1,16 +1,16 @@
 import { Inject } from '@nestjs/common';
+import { AddConferenciaCegaDto } from '../../../domain/devolucao/model/add-contagem.schema.js';
 import { type IDevolucaoRepository } from '../../../domain/devolucao/repositories/devoluca.repository.js';
 
-export class StartDemandaDevolucao {
+export class AddContagemCegaUseCase {
   constructor(
     @Inject('IDevolucaoRepository')
     private readonly devolucaoRepository: IDevolucaoRepository,
   ) {}
   async execute(
     demandaId: string,
-    doca: string,
-    accountId: string,
+    contagem: AddConferenciaCegaDto[],
   ): Promise<void> {
-    await this.devolucaoRepository.startDemanda(demandaId, doca, accountId);
+    return await this.devolucaoRepository.addContagemCega(demandaId, contagem);
   }
 }

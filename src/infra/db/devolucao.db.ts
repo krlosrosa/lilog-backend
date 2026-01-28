@@ -2,6 +2,9 @@ import { Injectable, Inject } from '@nestjs/common';
 import { IDevolucaoRepository } from '../../domain/devolucao/repositories/devoluca.repository.js';
 import { type DrizzleClient } from './drizzle/config/drizzle.provider.js';
 import {
+  devolucaImagens,
+  devolucaoAnomalias,
+  devolucaoCheckList,
   devolucaoDemanda,
   devolucaoItens,
   devolucaoNotas,
@@ -15,20 +18,29 @@ import {
   EntradaDto,
   ItensContabilDto,
 } from '../../domain/devolucao/model/get-itens-contabil.schema.js';
+import { AddCheckListDto } from '../../domain/devolucao/model/add-check-list.schema.js';
+import { MinioService } from '../minio/minio.service.js';
+import { AddCheckListResponseDto } from '../../domain/devolucao/model/result-add-check-list.js';
+import { StatusDevolucao } from '../../domain/devolucao/enums/status.enum.js';
+import { AddConferenciaCegaDto } from '../../domain/devolucao/model/add-contagem.schema.js';
+import { AddAnomaliaDto } from 'src/domain/devolucao/model/add-anomalia.schema.js';
 
 @Injectable()
 export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
   constructor(
     @Inject(DRIZZLE_PROVIDER)
     private readonly db: DrizzleClient,
+    @Inject(MinioService)
+    private readonly minioService: MinioService,
   ) {}
 
-  findById(id: number): Promise<any> {
+  async findById(id: number): Promise<any> {
     return this.db
       .select()
       .from(devolucaoDemanda)
       .where(eq(devolucaoDemanda.id, id));
   }
+
   async findNotasByDemandaId(id: number): Promise<any[]> {
     return this.db
       .select()
@@ -75,7 +87,10 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
       )
       .orderBy(devolucaoDemanda.criadoEm);
 
-    return demandas;
+    return demandas.map((demand) => ({
+      ...demand,
+      status: demand.status as StatusDevolucao,
+    }));
   }
 
   async addNfInDemand(addNotaDto: AddNotaDto): Promise<void> {
@@ -133,7 +148,7 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
     centerId: string,
     accountId: string,
   ): Promise<DemandDto[]> {
-    return this.db
+    const demandas = await this.db
       .select()
       .from(devolucaoDemanda)
       .where(
@@ -148,14 +163,23 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
           ),
         ),
       );
+    return demandas.map((demand) => ({
+      ...demand,
+      status: demand.status as StatusDevolucao,
+    }));
   }
 
-  async startDemanda(demandaId: string, accountId: string): Promise<void> {
+  async startDemanda(
+    demandaId: string,
+    doca: string,
+    accountId: string,
+  ): Promise<void> {
     await this.db
       .update(devolucaoDemanda)
       .set({
         status: 'EM_CONFERENCIA',
         inicioConferenciaEm: new Date().toISOString(),
+        doca,
         conferenteId: accountId,
       })
       .where(eq(devolucaoDemanda.id, Number(demandaId)));
@@ -180,5 +204,101 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
     const itensAgrupados = agruparPorTipoSkuEDevolucao(subItens);
 
     return itensAgrupados;
+  }
+
+  async addCheckList(
+    checkList: AddCheckListDto,
+    demandaId: string,
+  ): Promise<AddCheckListResponseDto> {
+    // 1. Defina nomes de arquivos únicos (usar timestamp evita cache e sobreposição)
+    const timestamp = Date.now();
+    const keyBauAberto = `devolucaochecklist/${checkList.demandaId}/${timestamp}-bau-aberto.jpg`;
+    const keyBauFechado = `devolucaochecklist/${checkList.demandaId}/${timestamp}-bau-fechado.jpg`;
+
+    return await this.db.transaction(async (tx) => {
+      // 2. Gera as URLs pré-assinadas
+      const urlBauAberto = await this.minioService.getPresignedUploadUrl(
+        'devolucao',
+        keyBauAberto,
+      );
+      const urlBauFechado = await this.minioService.getPresignedUploadUrl(
+        'devolucao',
+        keyBauFechado,
+      );
+      // 3. Salva no banco (guardamos o caminho/key do arquivo, não a URL assinada)
+      // A URL assinada expira, o caminho no bucket é permanente.
+      await tx.insert(devolucaoCheckList).values({
+        temperaturaBau: Number(checkList?.temperaturaBau || 0),
+        temperaturaProduto: Number(checkList?.temperaturaProduto || 0),
+        anomalias: [],
+        atualizadoEm: new Date().toISOString(),
+        demandaId: Number(demandaId),
+      });
+
+      // 4. Retorna um objeto nomeado para o Frontend não se perder
+      return {
+        uploadUrls: {
+          bauAberto: urlBauAberto,
+          bauFechado: urlBauFechado,
+        },
+      };
+    });
+  }
+
+  async addContagemCega(
+    demandaId: string,
+    contagem: AddConferenciaCegaDto[],
+  ): Promise<void> {
+    const withTipo = contagem.map((item) => ({
+      ...item,
+      tipo: 'FISICO' as 'CONTABIL' | 'FISICO',
+      demandaId: Number(demandaId),
+    }));
+    await this.db.transaction(async (tx) => {
+      await tx
+        .delete(devolucaoItens)
+        .where(
+          and(
+            eq(devolucaoItens.demandaId, Number(demandaId)),
+            eq(devolucaoItens.tipo, 'FISICO'),
+          ),
+        );
+      await tx.insert(devolucaoItens).values(withTipo);
+    });
+  }
+
+  async finishDemanda(demandaId: string): Promise<void> {
+    await this.db
+      .update(devolucaoDemanda)
+      .set({
+        status: 'CONFERENCIA_FINALIZADA',
+        finalizadoEm: new Date().toISOString(),
+      })
+      .where(eq(devolucaoDemanda.id, Number(demandaId)));
+  }
+
+  async addAnomalia(anomalia: AddAnomaliaDto): Promise<void> {
+    await this.db.transaction(async (tx) => {
+      await tx.insert(devolucaoAnomalias).values({
+        demandaId: anomalia.demandaId,
+        sku: anomalia.sku,
+        descricao: anomalia.descricao,
+        lote: anomalia.lote,
+        tipo: anomalia.tipo,
+        natureza: anomalia.natureza,
+        causa: anomalia.causa,
+        quantidadeCaixas: anomalia.quantidadeCaixas,
+        quantidadeUnidades: anomalia.quantidadeUnidades,
+        atualizadoEm: new Date().toISOString(),
+        criadoEm: new Date().toISOString(),
+      });
+      const urls = anomalia.imagens.map((imagem) => ({
+        demandaId: anomalia.demandaId,
+        processo: 'devolucao-anomalias',
+        tag: imagem,
+      }));
+
+      await tx.insert(devolucaImagens).values(urls);
+    });
   }
 }

@@ -5,6 +5,7 @@ import { AppService } from './app.service.js';
 import { DevolucaoModule } from '../infra/modules/devolucao.module.js';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../infra/modules/user.module.js';
+import { MinioModule } from '../infra/minio/minio.module.js';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from '../infra/modules/user.module.js';
     }),
     DevolucaoModule,
     UserModule,
+    MinioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
