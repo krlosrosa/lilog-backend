@@ -260,7 +260,7 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
       .update(devolucaoDemanda)
       .set({
         status: 'CONFERENCIA_FINALIZADA',
-        finalizadoEm: new Date().toISOString(),
+        fimConferenciaEm: new Date().toISOString(),
       })
       .where(eq(devolucaoDemanda.id, Number(demandaId)));
   }
