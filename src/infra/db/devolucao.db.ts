@@ -207,14 +207,35 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
     demandaId: string,
   ): Promise<void> {
     return await this.db.transaction(async (tx) => {
-      await tx.insert(devolucaoCheckList).values({
-        temperaturaBau: Number(checkList?.temperaturaBau || 0),
-        temperaturaProduto: Number(checkList?.temperaturaProduto || 0),
-        anomalias: [],
-        atualizadoEm: new Date().toISOString(),
-        demandaId: Number(demandaId),
-      });
+      await tx
+        .insert(devolucaoCheckList)
+        .values({
+          temperaturaBau: Number(checkList?.temperaturaBau || 0),
+          temperaturaProduto: Number(checkList?.temperaturaProduto || 0),
+          anomalias: [],
+          atualizadoEm: new Date().toISOString(),
+          demandaId: Number(demandaId),
+        })
+        .onConflictDoUpdate({
+          target: devolucaoCheckList.demandaId, // coluna única ou chave primária
+          set: {
+            temperaturaBau: Number(checkList?.temperaturaBau || 0),
+            temperaturaProduto: Number(checkList?.temperaturaProduto || 0),
+            atualizadoEm: new Date().toISOString(),
+          },
+        });
 
+      // 2. Antes de inserir imagens, remove as antigas com mesmo demandaId + processo
+      await tx
+        .delete(devolucaImagens)
+        .where(
+          and(
+            eq(devolucaImagens.demandaId, Number(demandaId)),
+            eq(devolucaImagens.processo, 'devolucao-check-list'),
+          ),
+        );
+
+      // 3. Insere as novas imagens
       const checkListImages = [
         {
           demandaId: Number(demandaId),
@@ -229,7 +250,6 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
       ];
 
       await tx.insert(devolucaImagens).values(checkListImages);
-      // 4. Retorna um objeto nomeado para o Frontend não se perde
     });
   }
 
