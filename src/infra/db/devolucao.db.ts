@@ -309,4 +309,12 @@ export class DevolucaoDrizzleRepository implements IDevolucaoRepository {
       await tx.insert(devolucaImagens).values(urls);
     });
   }
+  async addImagemFim(imagens: string[], demandaId: string): Promise<void> {
+    const urls = imagens.map((imagem) => ({
+      demandaId: Number(demandaId),
+      processo: 'devolucao-fim',
+      tag: imagem,
+    }));
+    await this.db.insert(devolucaImagens).values(urls);
+  }
 }

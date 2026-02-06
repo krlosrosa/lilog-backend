@@ -45,4 +45,24 @@ export class PresignedUrlDevolucaoController {
       filename,
     );
   }
+
+  @Post('presigned-url-devolucao/fim-devolucao/:filename')
+  @ApiOperation({
+    summary: 'Gerar URL pré-assinada para upload de fim de devolução',
+    operationId: 'getPresignedUrlFimDevolucao',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'URL pré-assinada para upload de fim de devolução gerada com sucesso',
+    type: String,
+  })
+  async getPresignedUrlFimDevolucao(
+    @Param('filename') filename: string,
+  ): Promise<string> {
+    return this.presignedUrlMinioUseCase.execute(
+      'devolucaoprocessoconcluido',
+      filename,
+    );
+  }
 }
