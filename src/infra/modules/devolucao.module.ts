@@ -35,6 +35,8 @@ import { AddAnomaliaDevolucaoController } from '../../presentation/controllers/d
 import { AddAnomaliaDevolucao } from '../../application/devolucao/usecases/add-anomalia-devolucao.js';
 import { PresignedUrlDevolucaoController } from '../../presentation/controllers/devolucao/presigned-url-devolucao.js';
 import { PresignedUrlMinio } from '../../application/devolucao/usecases/presigned-url-minio.js';
+import { AddImagemFimDevolucaoController } from '../../presentation/controllers/devolucao/add-imagem-fim-devolucao.js';
+import { AddImagemFimDevolucao } from '../../application/devolucao/usecases/add-imagem-fim-devolucao.js';
 
 @Module({
   imports: [
@@ -57,6 +59,7 @@ import { PresignedUrlMinio } from '../../application/devolucao/usecases/presigne
     FinishDemandaController,
     AddAnomaliaDevolucaoController,
     PresignedUrlDevolucaoController,
+    AddImagemFimDevolucaoController,
   ],
   providers: [
     drizzleProvider, // Provider do Drizzle ORM
@@ -76,6 +79,7 @@ import { PresignedUrlMinio } from '../../application/devolucao/usecases/presigne
     FinishDemanda,
     AddAnomaliaDevolucao,
     PresignedUrlMinio,
+    AddImagemFimDevolucao,
     {
       provide: 'IDevolucaoRepository', // Interface no Domain
       useClass: DevolucaoDrizzleRepository, // Implementação na Infra
